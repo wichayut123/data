@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสอบถามข้อมูลส่วนตัว | Personal Survey</title>
+    <!-- Google Fonts: Outfit & Noto Sans Thai -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background dynamic gradient elements -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="container">
+        <!-- Card wrapper -->
+        <main class="survey-card">
+            <!-- Header Section -->
+            <header class="survey-header">
+                <div class="logo-area">
+                    <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <h1>แบบสอบถามข้อมูลส่วนตัว</h1>
+                </div>
+                <p class="subtitle">กรุณากรอกข้อมูลของคุณให้ครบถ้วนเพื่อประโยชน์ในการเก็บสถิติ</p>
+                
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="steps-indicator">
+                        <div class="step-dot active" data-step="1">
+                            <span class="step-num">1</span>
+                            <span class="step-label">ทั่วไป</span>
+                        </div>
+                        <div class="step-dot" data-step="2">
+                            <span class="step-num">2</span>
+                            <span class="step-label">การติดต่อ</span>
+                        </div>
+                        <div class="step-dot" data-step="3">
+                            <span class="step-num">3</span>
+                            <span class="step-label">ความสนใจ</span>
+                        </div>
+                        <div class="step-dot" data-step="4">
+                            <span class="step-num">4</span>
+                            <span class="step-label">ยืนยัน</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Form element -->
+            <form id="surveyForm" novalidate>
+                <!-- API URL Input (Hidden or configurable) -->
+                <input type="hidden" id="sheetApiUrl" value="">
+
+                <!-- STEP 1: General Info -->
+                <div class="form-step step-pane active" id="step1">
+                    <div class="step-title-area">
+                        <h2>ข้อมูลทั่วไป</h2>
+                        <p>กรุณาระบุรายละเอียดประวัติต่าง ๆ ของคุณ</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <!-- Full Name -->
+                        <div class="form-group col-span-2">
+                            <div class="input-wrapper">
+                                <input type="text" id="fullname" name="fullname" required placeholder=" ">
+                                <label for="fullname">ชื่อ - นามสกุล</label>
+                                <span class="error-msg" id="fullname-error">กรุณากรอกชื่อ-นามสกุล</span>
+                            </div>
+                        </div>
+
+                        <!-- Nickname -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="text" id="nickname" name="nickname" required placeholder=" ">
+                                <label for="nickname">ชื่อเล่น</label>
+                                <span class="error-msg" id="nickname-error">กรุณากรอกชื่อเล่น</span>
+                            </div>
+                        </div>
+
+                        <!-- Birthdate -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="date" id="birthdate" name="birthdate" required placeholder=" ">
+                                <label for="birthdate" class="date-label">วันเดือนปีเกิด</label>
+                                <span class="error-msg" id="birthdate-error">กรุณาเลือกวันเกิดที่ถูกต้อง</span>
+                            </div>
+                        </div>
+
+                        <!-- Age Display (Auto-calculated) -->
+                        <div class="form-group col-span-2 age-indicator-group">
+                            <div class="age-badge-wrapper" id="ageBadgeWrapper" style="display: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span>อายุของคุณคือ: <strong id="calculatedAge">-</strong> ปี</span>
+                            </div>
+                        </div>
+
+                        <!-- Gender (Custom interactive cards) -->
+                        <div class="form-group col-span-2">
+                            <label class="section-sublabel">เพศสภาพ</label>
+                            <input type="hidden" id="gender" name="gender" required>
+                            <div class="gender-cards">
+                                <div class="gender-card" data-gender="ชาย">
+                                    <div class="gender-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="10" cy="14" r="5"></circle>
+                                            <line x1="19" y1="5" x2="13.5" y2="10.5"></line>
+                                            <polyline points="14 5 19 5 19 10"></polyline>
+                                        </svg>
+                                    </div>
+                                    <span>ชาย</span>
+                                </div>
+                                <div class="gender-card" data-gender="หญิง">
+                                    <div class="gender-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="8" r="5"></circle>
+                                            <line x1="12" y1="13" x2="12" y2="21"></line>
+                                            <line x1="9" y1="18" x2="15" y2="18"></line>
+                                        </svg>
+                                    </div>
+                                    <span>หญิง</span>
+                                </div>
+                                <div class="gender-card" data-gender="อื่นๆ">
+                                    <div class="gender-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <path d="M8 12h8"></path>
+                                            <path d="M12 8v8"></path>
+                                        </svg>
+                                    </div>
+                                    <span>หลากหลายเพศ</span>
+                                </div>
+                            </div>
+                            <span class="error-msg" id="gender-error">กรุณาเลือกเพศสภาพของคุณ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Contact Info -->
+                <div class="form-step step-pane" id="step2">
+                    <div class="step-title-area">
+                        <h2>ข้อมูลการติดต่อ</h2>
+                        <p>กรุณาระบุที่อยู่และช่องทางการติดต่อกลับ</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <!-- Email -->
+                        <div class="form-group col-span-2">
+                            <div class="input-wrapper">
+                                <input type="email" id="email" name="email" required placeholder=" ">
+                                <label for="email">อีเมล</label>
+                                <span class="error-msg" id="email-error">กรุณากรอกอีเมลที่ถูกต้อง (เช่น name@example.com)</span>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="tel" id="phone" name="phone" required placeholder=" " maxlength="10">
+                                <label for="phone">เบอร์โทรศัพท์</label>
+                                <span class="error-msg" id="phone-error">กรุณากรอกเบอร์โทรศัพท์ 10 หลัก</span>
+                            </div>
+                        </div>
+
+                        <!-- Line ID / Social Link -->
+                        <div class="form-group">
+                            <div class="input-wrapper">
+                                <input type="text" id="social" name="social" required placeholder=" ">
+                                <label for="social">Line ID / ช่องทางโซเชียลมีเดีย</label>
+                                <span class="error-msg" id="social-error">กรุณาระบุช่องทางการติดต่อโซเชียลมีเดีย</span>
+                            </div>
+                        </div>
+
+                        <!-- Current Address -->
+                        <div class="form-group col-span-2">
+                            <div class="input-wrapper">
+                                <textarea id="address" name="address" required placeholder=" " rows="3"></textarea>
+                                <label for="address">ที่อยู่ปัจจุบัน</label>
+                                <span class="error-msg" id="address-error">กรุณากรอกที่อยู่ของคุณ</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Preferences & Interests -->
+                <div class="form-step step-pane" id="step3">
+                    <div class="step-title-area">
+                        <h2>ความสนใจและข้อมูลส่วนตัวอื่นๆ</h2>
+                        <p>ช่วยแนะนำตัวเองและบอกงานอดิเรกที่คุณชื่นชอบ</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <!-- Hobbies (Multi-select tag pills) -->
+                        <div class="form-group col-span-2">
+                            <label class="section-sublabel">งานอดิเรกที่คุณชื่นชอบ (เลือกได้หลายข้อ)</label>
+                            <input type="hidden" id="hobbies" name="hobbies" required>
+                            
+                            <div class="hobbies-tags">
+                                <button type="button" class="hobby-tag" data-hobby="กีฬา">🏃‍♂️ กีฬา / ออกกำลังกาย</button>
+                                <button type="button" class="hobby-tag" data-hobby="ดนตรี">🎵 ฟังเพลง / เล่นดนตรี</button>
+                                <button type="button" class="hobby-tag" data-hobby="ท่องเที่ยว">✈️ ท่องเที่ยว / เดินทาง</button>
+                                <button type="button" class="hobby-tag" data-hobby="เทคโนโลยี">💻 เทคโนโลยี / เล่นเกม</button>
+                                <button type="button" class="hobby-tag" data-hobby="อ่านหนังสือ">📚 อ่านหนังสือ / การเรียนรู้</button>
+                                <button type="button" class="hobby-tag" data-hobby="ทำอาหาร">🍳 ทำอาหาร / ทำขนม</button>
+                                <button type="button" class="hobby-tag" data-hobby="ถ่ายภาพ">📸 ถ่ายภาพ / งานศิลปะ</button>
+                                <button type="button" class="hobby-tag" data-hobby="ดูภาพยนตร์">🍿 ดูหนัง / ซีรีส์</button>
+                            </div>
+                            <span class="error-msg" id="hobbies-error">กรุณาเลือกงานอดิเรกอย่างน้อย 1 อย่าง</span>
+                        </div>
+
+                        <!-- Preferred Contact Method (Select Dropdown style styled) -->
+                        <div class="form-group col-span-2">
+                            <label class="section-sublabel">ช่องทางการติดต่อที่สะดวกที่สุด</label>
+                            <div class="custom-select-wrapper">
+                                <select id="contactMethod" name="contactMethod" required>
+                                    <option value="" disabled selected>กรุณาเลือกช่องทาง...</option>
+                                    <option value="เบอร์โทรศัพท์">เบอร์โทรศัพท์</option>
+                                    <option value="อีเมล">อีเมล</option>
+                                    <option value="Line ID">Line ID / โซเชียลมีเดีย</option>
+                                </select>
+                                <div class="select-arrow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+                            <span class="error-msg" id="contactMethod-error">กรุณาเลือกช่องทางติดต่อสะดวกที่สุด</span>
+                        </div>
+
+                        <!-- Message / Bio -->
+                        <div class="form-group col-span-2">
+                            <div class="input-wrapper">
+                                <textarea id="bio" name="bio" placeholder=" " rows="3"></textarea>
+                                <label for="bio">แนะนำตัวเองเพิ่มเติม (ไม่บังคับ)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Review and Submit -->
+                <div class="form-step step-pane" id="step4">
+                    <div class="step-title-area">
+                        <h2>ตรวจสอบข้อมูลส่วนตัว</h2>
+                        <p>กรุณาตรวจสอบรายละเอียดความถูกต้องทั้งหมดก่อนทำการบันทึกข้อมูลไปยัง Google Sheets</p>
+                    </div>
+
+                    <!-- Config Area for Sheet URL in visual interface -->
+                    <div class="sheet-config-container">
+                        <div class="config-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                <line x1="9" y1="21" x2="9" y2="9"></line>
+                            </svg>
+                            <h3>ตั้งค่า Google Sheets API</h3>
+                        </div>
+                        <p class="config-description">ระบุ Google Apps Script Web App URL ของคุณเพื่อบันทึกข้อมูลจริง (หากไม่มีระบบจะทดลองบันทึกข้อมูลจำลองแทน)</p>
+                        <div class="input-wrapper compact">
+                            <input type="url" id="apiUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+                            <label for="apiUrlInput">Google Apps Script Web App URL</label>
+                        </div>
+                        <div class="config-status-badge inactive" id="apiUrlStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">โหมดสาธิต (บันทึกจำลองลงในเบราว์เซอร์)</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Summary Details -->
+                    <div class="summary-details">
+                        <!-- Group 1: General -->
+                        <div class="summary-section">
+                            <h4>ข้อมูลทั่วไป</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item"><span class="label">ชื่อ-นามสกุล:</span> <span class="val" id="sum-fullname">-</span></div>
+                                <div class="summary-item"><span class="label">ชื่อเล่น:</span> <span class="val" id="sum-nickname">-</span></div>
+                                <div class="summary-item"><span class="label">วันเดือนปีเกิด:</span> <span class="val" id="sum-birthdate">-</span></div>
+                                <div class="summary-item"><span class="label">อายุ:</span> <span class="val"><span id="sum-age">-</span> ปี</span></div>
+                                <div class="summary-item"><span class="label">เพศสภาพ:</span> <span class="val" id="sum-gender">-</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Group 2: Contact -->
+                        <div class="summary-section">
+                            <h4>ข้อมูลติดต่อ</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item col-span-2"><span class="label">อีเมล:</span> <span class="val" id="sum-email">-</span></div>
+                                <div class="summary-item"><span class="label">เบอร์โทร:</span> <span class="val" id="sum-phone">-</span></div>
+                                <div class="summary-item"><span class="label">Social/Line ID:</span> <span class="val" id="sum-social">-</span></div>
+                                <div class="summary-item col-span-2"><span class="label">ที่อยู่:</span> <span class="val text-block" id="sum-address">-</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Group 3: Interests -->
+                        <div class="summary-section">
+                            <h4>ความสนใจอื่น ๆ</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item col-span-2">
+                                    <span class="label">งานอดิเรก:</span> 
+                                    <div class="val" id="sum-hobbies-container">
+                                        <!-- Hobbies tag pills will appear here -->
+                                        -
+                                    </div>
+                                </div>
+                                <div class="summary-item"><span class="label">ช่องทางการติดต่อที่สะดวก:</span> <span class="val" id="sum-contactMethod">-</span></div>
+                                <div class="summary-item col-span-2"><span class="label">แนะนำตัวเพิ่มเติม:</span> <span class="val text-block" id="sum-bio">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="nav-controls">
+                    <button type="button" class="btn btn-secondary" id="btnPrev" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        <span>ย้อนกลับ</span>
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnNext">
+                        <span>ถัดไป</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success Overlay Screen -->
+            <div class="success-screen" id="successScreen">
+                <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+                <div class="success-content">
+                    <div class="success-icon-wrapper">
+                        <svg class="success-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <h2>ส่งแบบสอบถามสำเร็จแล้ว!</h2>
+                    <p>ข้อมูลส่วนตัวของคุณได้รับการบันทึกไปยัง Google Sheets เรียบร้อยแล้ว</p>
+                    
+                    <div class="success-summary">
+                        <div class="success-summary-row">
+                            <span class="label">ชื่อผู้ส่ง:</span>
+                            <span class="value" id="successName">-</span>
+                        </div>
+                        <div class="success-summary-row">
+                            <span class="label">บันทึกผ่านทาง:</span>
+                            <span class="value highlight" id="successDest">-</span>
+                        </div>
+                    </div>
+
+                    <div class="success-actions">
+                        <button type="button" class="btn btn-secondary" id="btnDownloadJson">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>ดาวน์โหลดไฟล์ข้อมูล (JSON)</span>
+                        </button>
+                        <button type="button" class="btn btn-primary" id="btnReset">
+                            <span>กรอกข้อมูลใหม่</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading overlay during form submission -->
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>กำลังบันทึกข้อมูลไปยัง Google Sheets...</p>
+                    <span class="loading-tip">กรุณาอย่าเพิ่งปิดหน้าต่างนี้</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Copyright / Footer info -->
+    <footer class="main-footer">
+        <p>© 2026 แบบสอบถามข้อมูลส่วนตัว พัฒนาด้วยความประณีต 💜 สำหรับการทำงานบน GitHub</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
